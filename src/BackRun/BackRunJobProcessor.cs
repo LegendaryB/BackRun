@@ -52,7 +52,7 @@ namespace BackRun
                     job,
                     cancellationToken);
 
-                job.Status = BackRunJobStatus.Completed;
+                job.Status = BackRunJobStatus.Succeeded;
                 job.CompletedAt = DateTime.UtcNow;
                 job.Error = null;
 
@@ -103,7 +103,7 @@ namespace BackRun
                 metadata.PayloadType.FullName);
 
             var payload = JsonSerializer.Deserialize(
-                job.SerializedPayload,
+                job.PayloadJson,
                 metadata.PayloadType)!;
 
             _logger.LogDebug(

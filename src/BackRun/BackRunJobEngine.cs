@@ -164,7 +164,7 @@ namespace BackRun
 
                             // Mark as completed
                             await UseStorageAsync(storage =>
-                                storage.UpdateJobStatusAsync(job.Id, BackRunJobStatus.Completed, null,
+                                storage.UpdateJobStatusAsync(job.Id, BackRunJobStatus.Succeeded, null,
                                     cancellationToken));
 
                             _logger.LogInformation(
@@ -220,7 +220,7 @@ namespace BackRun
             {
                 Id = Guid.NewGuid(),
                 HandlerType = handlerType,
-                SerializedPayload = serializedPayload,
+                PayloadJson = serializedPayload,
                 Status = BackRunJobStatus.Queued,
                 CreatedAt = DateTime.UtcNow,
             };

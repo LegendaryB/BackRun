@@ -6,7 +6,7 @@
 
         public required string HandlerType { get; init; }
 
-        public required string SerializedPayload { get; init; }
+        public string PayloadJson { get; set; } = null!;
 
         public BackRunJobStatus Status { get; set; }
 
