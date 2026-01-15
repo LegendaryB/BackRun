@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\BackRun\BackRun.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JsonFlatFileDataStore" />
+  </ItemGroup>
+
+</Project>

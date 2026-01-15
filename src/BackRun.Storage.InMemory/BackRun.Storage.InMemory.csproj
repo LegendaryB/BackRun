@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <ItemGroup>
+    <ProjectReference Include="..\BackRun.Abstractions\BackRun.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
