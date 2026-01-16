@@ -56,19 +56,5 @@ namespace BackRun.Storage.InMemory
             
             return Task.FromResult(pending);
         }
-
-        public Task DeleteOldJobsAsync(
-            DateTimeOffset olderThan,
-            CancellationToken cancellationToken = default)
-        {
-            var toRemove = _jobs.Values.Where(job => 
-                job.Status is BackRunJobStatus.Succeeded or BackRunJobStatus.Failed && 
-                job.CompletedAt < olderThan);
-
-            foreach (var job in toRemove)
-                _jobs.TryRemove(job.Id, out _);
-        
-            return Task.CompletedTask;
-        }
     }
 }
