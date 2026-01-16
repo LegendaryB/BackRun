@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using BackRun.Abstractions;
 using BackRun.DependencyInjection;
-using BackRun.Storage.InMemory;
+using BackRun.Resilience;
 using BackRun.Storage.Json;
 
 namespace BackRun.TestApi
@@ -55,6 +55,7 @@ namespace BackRun.TestApi
                     options.MaxDegreeOfParallelism = 3;
 
                     backrun
+                        .AddResilience()
                         .AddHandlersFromAssembly(typeof(Program).Assembly)
                         .UseJsonFlatFileStorage();
                 });

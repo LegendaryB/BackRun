@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
+    <ProjectReference Include="..\BackRun.Resilience\BackRun.Resilience.csproj" />
     <ProjectReference Include="..\BackRun.Storage.InMemory\BackRun.Storage.InMemory.csproj" />
     <ProjectReference Include="..\BackRun.Storage.Json\BackRun.Storage.Json.csproj" />
     <ProjectReference Include="..\BackRun\BackRun.csproj" />
