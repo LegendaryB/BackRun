@@ -8,5 +8,8 @@
 
         public static BackRunEnqueueOptions Delay(TimeSpan delay) =>
             new() { ScheduledAt = DateTimeOffset.UtcNow.Add(delay) };
+        
+        public static BackRunEnqueueOptions Schedule(DateTimeOffset scheduledAt) =>
+            new() { ScheduledAt = scheduledAt };
     }
 }
