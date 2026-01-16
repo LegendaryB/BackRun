@@ -1,6 +1,8 @@
+using System.Text.Json.Serialization;
 using BackRun.Abstractions;
-using BackRun.Extensions;
+using BackRun.DependencyInjection;
 using BackRun.Storage.InMemory;
+using BackRun.Storage.Json;
 
 namespace BackRun.TestApi
 {
@@ -33,22 +35,27 @@ namespace BackRun.TestApi
 
     public class Program
     {
-        
-
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            
+            builder.Services
+                .AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
+            
+            
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services
-                .AddBackRun()
-                .AddSingleton<ISendWelcomeEmailHandler, SendWelcomeEmailHandler>()
-                .AddSingleton<IBackRunStorage, BackRunInMemoryStorage>();
+                .AddBackRun(options =>
+                {
+                    options.MaxDegreeOfParallelism = 3;
+                })
+                .AddHandlersFromAssembly(typeof(Program).Assembly)
+                .UseJsonFlatFileStorage();
 
             var app = builder.Build();
 

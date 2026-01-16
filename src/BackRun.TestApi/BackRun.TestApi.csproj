@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BackRun.Storage.InMemory\BackRun.Storage.InMemory.csproj" />
+    <ProjectReference Include="..\BackRun.Storage.Json\BackRun.Storage.Json.csproj" />
     <ProjectReference Include="..\BackRun\BackRun.csproj" />
   </ItemGroup>
 

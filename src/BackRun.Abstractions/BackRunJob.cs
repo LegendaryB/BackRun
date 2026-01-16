@@ -1,19 +1,27 @@
 ﻿namespace BackRun.Abstractions
 {
-    public class BackRunJob
+    public record BackRunJob
     {
-        public Guid Id { get; init; }
+        public required Guid Id { get; init; } = Guid.NewGuid();
 
         public required string HandlerType { get; init; }
 
-        public string PayloadJson { get; set; } = null!;
+        public required string PayloadType { get; init; }
+        
+        public required string PayloadJson { get; init; }
+        
+        public BackRunJobStatus Status { get; set; } = BackRunJobStatus.Queued;
 
-        public BackRunJobStatus Status { get; set; }
+        public string QueueName { get; init; } = "default";
+        
+        public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
 
-        public DateTimeOffset CreatedAt { get; init; }
+        public DateTimeOffset? ScheduledAt { get; init; }
 
+        public int RetryCount { get; set; }
+        
+        public string? LastError { get; set; }
+        
         public DateTimeOffset? CompletedAt { get; set; }
-
-        public string? Error { get; set; }
     }
 }

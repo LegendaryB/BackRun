@@ -7,40 +7,62 @@ namespace BackRun.Storage.InMemory
     {
         private readonly ConcurrentDictionary<Guid, BackRunJob> _jobs = new();
 
+        public Task StoreJobAsync(
+            BackRunJob job,
+            CancellationToken cancellationToken = default)
+        {
+            _jobs[job.Id] = job;
+            return Task.CompletedTask;
+        }
+
         public Task<BackRunJob?> GetJobAsync(
             Guid id,
             CancellationToken cancellationToken = default)
         {
             _jobs.TryGetValue(id, out var job);
-
             return Task.FromResult(job);
         }
 
-        public Task StoreJobAsync(
+        public Task UpdateJobAsync(
             BackRunJob job,
             CancellationToken cancellationToken = default)
         {
-            if (!_jobs.TryAdd(job.Id, job))
-                throw new InvalidOperationException($"Job with ID {job.Id} already exists.");
-
+            _jobs[job.Id] = job;
+            
             return Task.CompletedTask;
         }
 
-        public Task UpdateJobStatusAsync(
-            Guid id,
-            BackRunJobStatus status,
-            string? error,
+        public Task<IEnumerable<BackRunJob>> GetRunningJobsAsync(
             CancellationToken cancellationToken = default)
         {
-            if (!_jobs.TryGetValue(id, out var job))
-                throw new KeyNotFoundException($"Could not find job (id = {id}.");
+            var orphaned = _jobs.Values.Where(job => 
+                job.Status is BackRunJobStatus.Running or BackRunJobStatus.Queued);
+            
+            return Task.FromResult(orphaned);
+        }
 
-            job.Status = status;
-            job.Error = error;
-            job.CompletedAt = status == BackRunJobStatus.Completed ?
-                DateTimeOffset.UtcNow :
-                null;
+        public Task<IEnumerable<BackRunJob>> GetPendingScheduledJobsAsync(
+            DateTimeOffset now,
+            CancellationToken cancellationToken = default)
+        {
+            var pending = _jobs.Values.Where(job => 
+                job.Status == BackRunJobStatus.Scheduled && 
+                job.ScheduledAt <= now);
+            
+            return Task.FromResult(pending);
+        }
 
+        public Task DeleteOldJobsAsync(
+            DateTimeOffset olderThan,
+            CancellationToken cancellationToken = default)
+        {
+            var toRemove = _jobs.Values.Where(job => 
+                job.Status is BackRunJobStatus.Succeeded or BackRunJobStatus.Failed && 
+                job.CompletedAt < olderThan);
+
+            foreach (var job in toRemove)
+                _jobs.TryRemove(job.Id, out _);
+        
             return Task.CompletedTask;
         }
     }

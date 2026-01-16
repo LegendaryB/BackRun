@@ -19,9 +19,9 @@ namespace BackRun.TestApi.Controllers
         }
 
         [HttpGet("Create")]
-        public ActionResult CreateDummy()
+        public async Task<ActionResult> CreateDummy()
         {
-            var id = _engine.EnqueueAsync<SendWelcomeEmailPayload, SendWelcomeEmailHandler>(
+            var id = await _engine.EnqueueAsync<SendWelcomeEmailPayload, SendWelcomeEmailHandler>(
                 new SendWelcomeEmailPayload(),
                 new ());
 
