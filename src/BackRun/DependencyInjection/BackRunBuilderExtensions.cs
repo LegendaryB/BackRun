@@ -9,7 +9,7 @@ public static class BackRunBuilderExtensions
     extension(IBackRunBuilder builder)
     {
         /// <summary>
-        /// Adds a custom middleware to the job execution pipeline.
+        /// Adds custom middleware to the job execution pipeline.
         /// </summary>
         public IBackRunBuilder AddMiddleware<TMiddleware>()
             where TMiddleware : class, IBackRunMiddleware
@@ -17,6 +17,18 @@ public static class BackRunBuilderExtensions
             builder.Services.AddScoped<IBackRunMiddleware, TMiddleware>();
         
             return builder;
+        }
+        
+        /// <summary>
+        /// Adds custom middleware to the job execution pipeline if the specified condition is met.
+        /// </summary>
+        public IBackRunBuilder AddMiddlewareWhen<TMiddleware>(
+            bool condition,
+            Func<IBackRunBuilder, IBackRunBuilder> action)
+        
+            where TMiddleware : class, IBackRunMiddleware
+        {
+            return condition ? action(builder) : builder;
         }
 
         /// <summary>
