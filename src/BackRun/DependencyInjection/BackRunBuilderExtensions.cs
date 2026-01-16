@@ -61,20 +61,38 @@ public static class BackRunBuilderExtensions
         /// </summary>
         public IBackRunBuilder AddHandlersFromAssembly(Assembly assembly)
         {
-            var handlers = assembly
+            var handlerTypes = assembly
                 .GetTypes()
                 .Where(type =>
                     type is { IsClass: true, IsAbstract: false } &&
                     type.IsAssignableTo(typeof(IBackRunJobHandler)));
 
-            foreach (var handler in handlers)
+            return builder.AddHandlers(handlerTypes.ToArray());
+        }
+        
+        /// <summary>
+        /// Registers the types implementing IBackRunJobHandler as job handlers.
+        /// </summary>
+        public IBackRunBuilder AddHandlers(params Type[] handlerTypes)
+        {
+            var addHandlerMethod = typeof(BackRunBuilderExtensions).GetMethod(nameof(AddHandler))!;
+
+            foreach (var handler in handlerTypes)
             {
-                typeof(BackRunBuilderExtensions)
-                    .GetMethod(nameof(AddHandler))!
+                if (!handler.IsClass ||
+                    handler.IsAbstract ||
+                    !handler.IsAssignableTo(typeof(IBackRunJobHandler)))
+                {
+                    throw new ArgumentException(
+                        $"Type '{handler.FullName}' is not a valid BackRun job handler. " +
+                        $"Handlers must be non-abstract classes and implement IBackRunJobHandler.");
+                }
+
+                addHandlerMethod
                     .MakeGenericMethod(handler)
                     .Invoke(null, [builder]);
             }
-            
+
             return builder;
         }
     }
