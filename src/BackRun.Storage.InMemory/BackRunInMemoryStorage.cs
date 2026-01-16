@@ -3,7 +3,7 @@ using BackRun.Abstractions;
 
 namespace BackRun.Storage.InMemory
 {
-    public class BackRunInMemoryStorage : IBackRunStorage
+    internal sealed class BackRunInMemoryStorage : IBackRunStorage
     {
         private readonly ConcurrentDictionary<Guid, BackRunJob> _jobs = new();
 
@@ -33,21 +33,26 @@ namespace BackRun.Storage.InMemory
         }
 
         public Task<IEnumerable<BackRunJob>> GetRunningJobsAsync(
+            int batchSize,
             CancellationToken cancellationToken = default)
         {
-            var orphaned = _jobs.Values.Where(job => 
-                job.Status is BackRunJobStatus.Running or BackRunJobStatus.Queued);
+            var orphaned = _jobs.Values
+                .Where(job => job.Status is BackRunJobStatus.Running or BackRunJobStatus.Queued)
+                .Take(batchSize);
             
             return Task.FromResult(orphaned);
         }
 
         public Task<IEnumerable<BackRunJob>> GetPendingScheduledJobsAsync(
             DateTimeOffset now,
+            int batchSize,
             CancellationToken cancellationToken = default)
         {
-            var pending = _jobs.Values.Where(job => 
-                job.Status == BackRunJobStatus.Scheduled && 
-                job.ScheduledAt <= now);
+            var pending = _jobs.Values
+                .Where(job => 
+                    job.Status == BackRunJobStatus.Scheduled && 
+                    job.ScheduledAt <= now)
+                .Take(batchSize);
             
             return Task.FromResult(pending);
         }

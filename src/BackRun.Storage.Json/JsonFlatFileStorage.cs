@@ -3,7 +3,7 @@ using BackRun.Abstractions;
 
 namespace BackRun.Storage.Json;
 
-public class JsonFlatFileStorage : IBackRunStorage
+internal sealed class JsonFlatFileStorage : IBackRunStorage
 {
     private readonly string _storagePath;
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
@@ -60,77 +60,59 @@ public class JsonFlatFileStorage : IBackRunStorage
             cancellationToken);
     }
 
-    public async Task<IEnumerable<BackRunJob>> GetRunningJobsAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<BackRunJob>> GetRunningJobsAsync(
+        int batchSize,
+        CancellationToken cancellationToken = default)
     {
-        var jobs = await GetAllJobsAsync(cancellationToken);
-        
-        return jobs.Where(job => 
-            job.Status is BackRunJobStatus.Running or BackRunJobStatus.Queued);
+        return await GetFilteredJobsAsync(
+            job => job.Status is BackRunJobStatus.Running or BackRunJobStatus.Queued,
+            batchSize,
+            cancellationToken);
     }
 
     public async Task<IEnumerable<BackRunJob>> GetPendingScheduledJobsAsync(
         DateTimeOffset now,
+        int batchSize,
         CancellationToken cancellationToken = default)
     {
-        var jobs = await GetAllJobsAsync(cancellationToken);
-        
-        return jobs.Where(job => 
-            job.Status == BackRunJobStatus.Scheduled && 
-            job.ScheduledAt <= now);
-    }
-
-    public async Task DeleteOldJobsAsync(
-        DateTimeOffset olderThan,
-        CancellationToken cancellationToken = default)
-    {
-        var jobs = await GetAllJobsAsync(cancellationToken);
-        
-        var toDelete = jobs.Where(job => 
-            job.Status is BackRunJobStatus.Succeeded or BackRunJobStatus.Failed && 
-            job.CompletedAt < olderThan);
-
-        foreach (var job in toDelete)
-        {
-            var path = GetFilePath(job.Id);
-            
-            if (File.Exists(path))
-                File.Delete(path);
-        }
+        return await GetFilteredJobsAsync(
+            job => job.Status == BackRunJobStatus.Scheduled && job.ScheduledAt <= now,
+            batchSize,
+            cancellationToken);
     }
 
     private string GetFilePath(Guid id) => Path.Combine(
         _storagePath,
         $"{id}.json");
 
-    private async Task<List<BackRunJob>> GetAllJobsAsync(CancellationToken cancellationToken = default)
+    private async Task<List<BackRunJob>> GetFilteredJobsAsync(
+        Func<BackRunJob, bool> filter,
+        int batchSize,
+        CancellationToken cancellationToken = default)
     {
         if (!Directory.Exists(_storagePath))
             return [];
 
-        var files = Directory.GetFiles(
-            _storagePath, 
-            "*.json");
-        
-        var jobs = new List<BackRunJob>();
+        var files = Directory.GetFiles(_storagePath, "*.json");
+        var results = new List<BackRunJob>();
 
         foreach (var file in files)
         {
+            if (results.Count >= batchSize) break;
+
             try
             {
-                var json = await File.ReadAllTextAsync(
-                    file,
-                    cancellationToken);
+                var json = await File.ReadAllTextAsync(file, cancellationToken);
+                var job = JsonSerializer.Deserialize<BackRunJob>(json, JsonOptions);
                 
-                var job = JsonSerializer.Deserialize<BackRunJob>(
-                    json,
-                    JsonOptions);
-                
-                if (job != null)
-                    jobs.Add(job);
+                if (job != null && filter(job))
+                {
+                    results.Add(job);
+                }
             }
             catch (IOException) {}
         }
 
-        return jobs;
+        return results;
     }
 }

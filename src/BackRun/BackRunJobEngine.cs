@@ -148,7 +148,9 @@ internal sealed class BackRunJobEngine(
             await using var scope = scopeFactory.CreateAsyncScope();
             var storage = scope.ServiceProvider.GetRequiredService<IBackRunStorage>();
             
-            var orphanedJobs = await storage.GetRunningJobsAsync(cancellationToken);
+            var orphanedJobs = await storage.GetRunningJobsAsync(
+                _options.PollingBatchSize,
+                cancellationToken);
             
             foreach (var job in orphanedJobs)
             {
@@ -180,6 +182,7 @@ internal sealed class BackRunJobEngine(
                 
                 var readyJobs = await storage.GetPendingScheduledJobsAsync(
                     DateTimeOffset.UtcNow,
+                    _options.PollingBatchSize,
                     cancellationToken);
                 
                 foreach (var job in readyJobs)
