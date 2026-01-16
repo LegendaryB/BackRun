@@ -50,12 +50,14 @@ namespace BackRun.TestApi
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services
-                .AddBackRun(options =>
+                .AddBackRun((options, backrun) =>
                 {
                     options.MaxDegreeOfParallelism = 3;
-                })
-                .AddHandlersFromAssembly(typeof(Program).Assembly)
-                .UseJsonFlatFileStorage();
+
+                    backrun
+                        .AddHandlersFromAssembly(typeof(Program).Assembly)
+                        .UseJsonFlatFileStorage();
+                });
 
             var app = builder.Build();
 

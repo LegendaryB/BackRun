@@ -8,6 +8,9 @@ public static class BackRunBuilderExtensions
 {
     extension(IBackRunBuilder builder)
     {
+        /// <summary>
+        /// Adds a custom middleware to the job execution pipeline.
+        /// </summary>
         public IBackRunBuilder AddMiddleware<TMiddleware>()
             where TMiddleware : class, IBackRunMiddleware
         {
@@ -16,6 +19,10 @@ public static class BackRunBuilderExtensions
             return builder;
         }
 
+        /// <summary>
+        /// Registers a job handler with an internal key to ensure it can be resolved by the engine
+        /// without leaking the concrete type to the public DI container.
+        /// </summary>
         public IBackRunBuilder AddHandler<THandler>()
             where THandler : class, IBackRunJobHandler
         {
@@ -37,6 +44,9 @@ public static class BackRunBuilderExtensions
             return builder;    
         }
 
+        /// <summary>
+        /// Scans the specified assembly for all classes implementing IBackRunJobHandler and registers them.
+        /// </summary>
         public IBackRunBuilder AddHandlersFromAssembly(Assembly assembly)
         {
             var handlers = assembly

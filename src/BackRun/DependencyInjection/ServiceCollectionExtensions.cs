@@ -6,23 +6,28 @@ namespace BackRun.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IBackRunBuilder AddBackRun(
+        public static IServiceCollection AddBackRun(
             this IServiceCollection services,
-            Action<BackRunOptions> configure)
+            Action<BackRunOptions, IBackRunBuilder> configure)
         {
             ArgumentNullException.ThrowIfNull(services);
             ArgumentNullException.ThrowIfNull(configure);
             
-            services.Configure(configure);
+            var options = new BackRunOptions();
+            var builder = new BackRunBuilder(services);
+
+            builder.AddMiddleware<BackRunLoggingMiddleware>();
+            builder.AddMiddleware<BackRunStatusMiddleware>();
+            
+            configure(options, builder);
+            
+            services.AddSingleton(options);
             
             services.AddSingleton<IBackRunJobEngine, BackRunJobEngine>();
             services.AddHostedService(sp => (BackRunJobEngine)sp.GetRequiredService<IBackRunJobEngine>());
             services.AddScoped<IBackRunJobProcessor, BackRunJobProcessor>();
 
-            services.AddSingleton<IBackRunMiddleware, BackRunLoggingMiddleware>();
-            services.AddScoped<IBackRunMiddleware, BackRunStatusMiddleware>();
-            
-            return new BackRunBuilder(services);
+            return services;
         }
     }
 }
