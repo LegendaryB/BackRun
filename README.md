@@ -140,5 +140,6 @@ backrun.AddMiddleware<MyAuditMiddleware>();
 - [x] Basic persistent storage (JSON).
 - [x] Self-healing and recovery logic.
 - [ ] **NuGet packages**: Official release to NuGet.org.
+- [ ] **Unit Tests**: Unit tests for all components.
 - [ ] **OpenTelemetry Integration**: Built-in traces and metrics for job execution.
 - [ ] **Entity Framework Core Provider**: Support for SQL-based storage.

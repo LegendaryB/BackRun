@@ -10,7 +10,6 @@ namespace BackRun
 {
     internal sealed class BackRunJobProcessor(
         IServiceProvider serviceProvider,
-        ILogger<BackRunJobProcessor> logger,
         IEnumerable<IBackRunMiddleware> middlewares) : IBackRunJobProcessor
     {
         private static readonly ConcurrentDictionary<string, Func<object, object, CancellationToken, Task>>

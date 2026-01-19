@@ -42,6 +42,7 @@ internal sealed class BackRunJobEngine(
         };
 
         await using var scope = scopeFactory.CreateAsyncScope();
+        
         var storage = scope.ServiceProvider.GetRequiredService<IBackRunStorage>();
         
         await storage.StoreJobAsync(
@@ -63,6 +64,7 @@ internal sealed class BackRunJobEngine(
         CancellationToken cancellationToken = default)
     {
         await using var scope = scopeFactory.CreateAsyncScope();
+        
         var storage = scope.ServiceProvider.GetRequiredService<IBackRunStorage>();
         
         return await storage.GetJobAsync(
@@ -83,13 +85,16 @@ internal sealed class BackRunJobEngine(
             try
             {
                 var jobId = await _channel.Reader.ReadAsync(stoppingToken);
+                
                 await _semaphore.WaitAsync(stoppingToken);
 
                 var task = Task.Run(async () =>
                 {
                     try
                     {
-                        await ProcessSingleJobAsync(jobId, stoppingToken);
+                        await ProcessSingleJobAsync(
+                            jobId,
+                            stoppingToken);
                     }
                     finally
                     {
@@ -117,6 +122,7 @@ internal sealed class BackRunJobEngine(
         CancellationToken cancellationToken = default)
     {
         await using var scope = scopeFactory.CreateAsyncScope();
+        
         var storage = scope.ServiceProvider.GetRequiredService<IBackRunStorage>();
         var processor = scope.ServiceProvider.GetRequiredService<IBackRunJobProcessor>();
 
@@ -146,6 +152,7 @@ internal sealed class BackRunJobEngine(
         try
         {
             await using var scope = scopeFactory.CreateAsyncScope();
+            
             var storage = scope.ServiceProvider.GetRequiredService<IBackRunStorage>();
             
             var orphanedJobs = await storage.GetRunningJobsAsync(
@@ -178,6 +185,7 @@ internal sealed class BackRunJobEngine(
             try
             {
                 await using var scope = scopeFactory.CreateAsyncScope();
+                
                 var storage = scope.ServiceProvider.GetRequiredService<IBackRunStorage>();
                 
                 var readyJobs = await storage.GetPendingScheduledJobsAsync(
