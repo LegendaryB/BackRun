@@ -1,6 +1,0 @@
-@BackRun.TestApi_HostAddress = http://localhost:5278
-
-GET {{BackRun.TestApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
