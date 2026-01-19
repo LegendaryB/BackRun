@@ -13,7 +13,8 @@ internal class BackRunLoggingMiddleware(ILogger<BackRunLoggingMiddleware> logger
         Func<BackRunJob, Task> next,
         CancellationToken cancellationToken = default)
     {
-        using var scope = logger.BeginScope(new Dictionary<string, object> { ["JobId"] = job.Id });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object> { ["JobId"] = job.Id });
 
         logger.LogJobExecutionStarting(job.HandlerType);
 

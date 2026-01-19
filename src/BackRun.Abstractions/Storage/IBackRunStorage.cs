@@ -56,14 +56,5 @@
             DateTimeOffset now,
             int batchSize,
             CancellationToken cancellationToken = default);
-
-        /* /// <summary>
-        /// Removes completed or failed jobs that are older than the specified timestamp.
-        /// </summary>
-        /// <param name="olderThan">The cutoff time for deletion.</param>
-        /// <param name="cancellationToken">A cancellation token for the operation.</param>
-        Task DeleteOldJobsAsync(
-            DateTimeOffset olderThan,
-            CancellationToken cancellationToken = default); */
     }
 }

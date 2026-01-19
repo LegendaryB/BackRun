@@ -11,13 +11,26 @@ internal sealed class BackRunResilienceMiddleware(ResiliencePipeline pipeline) :
         CancellationToken cancellationToken = default)
     {
         var context = ResilienceContextPool.Shared.Get(cancellationToken);
-        context.Properties.Set(new ResiliencePropertyKey<BackRunJob>("BackRunJob"), job);
+        
+        context.Properties.Set(
+            new ResiliencePropertyKey<BackRunJob>("BackRunJob"),
+            job);
 
         try
         {
             await pipeline.ExecuteAsync(async _ =>
             {
-                await next(job);
+                try
+                {
+                    await next(job);
+                }
+                catch
+                {
+                    job.RetryCount++;
+                    job.Status = BackRunJobStatus.Retrying;
+                    
+                    throw;
+                }
             }, context);
         }
         finally

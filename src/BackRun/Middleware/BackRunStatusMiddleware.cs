@@ -28,9 +28,13 @@ internal class BackRunStatusMiddleware(IBackRunStorage storage) : IBackRunMiddle
         }
         catch (Exception ex)
         {
-            job.Status = BackRunJobStatus.Failed;
+            if (job.Status != BackRunJobStatus.Retrying)
+            {
+                job.Status = BackRunJobStatus.Failed;
+                job.CompletedAt = DateTimeOffset.UtcNow;
+            }
+            
             job.LastError = ex.Message;
-            job.CompletedAt = DateTimeOffset.UtcNow;
             
             await storage.UpdateJobAsync(
                 job,

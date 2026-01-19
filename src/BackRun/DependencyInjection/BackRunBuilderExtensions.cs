@@ -28,7 +28,9 @@ public static class BackRunBuilderExtensions
         
             where TMiddleware : class, IBackRunMiddleware
         {
-            return condition ? action(builder) : builder;
+            return condition ?
+                action(builder) :
+                builder;
         }
 
         /// <summary>
@@ -75,7 +77,8 @@ public static class BackRunBuilderExtensions
         /// </summary>
         public IBackRunBuilder AddHandlers(params Type[] handlerTypes)
         {
-            var addHandlerMethod = typeof(BackRunBuilderExtensions).GetMethod(nameof(AddHandler))!;
+            var addHandlerMethod = typeof(BackRunBuilderExtensions)
+                .GetMethod(nameof(AddHandler))!;
 
             foreach (var handler in handlerTypes)
             {

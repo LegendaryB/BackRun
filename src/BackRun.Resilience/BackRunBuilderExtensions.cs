@@ -26,21 +26,6 @@ public static class BackRunBuilderExtensions
                     UseJitter = true,
                     MaxRetryAttempts = 3,
                     Delay = TimeSpan.FromSeconds(2),
-                    OnRetry = args =>
-                    {
-                        if (args.Outcome.Exception is null ||
-                            !args.Context.Properties.TryGetValue(
-                                new ResiliencePropertyKey<BackRunJob>("BackRunJob"),
-                                out var job))
-                        {
-                            return default;
-                        }
-                        
-                        job.RetryCount++;
-                        job.LastError = $"Retry {args.AttemptNumber}: {args.Outcome.Exception.Message}";
-                        
-                        return default;
-                    }
                 });
             });
         }
@@ -50,7 +35,8 @@ public static class BackRunBuilderExtensions
         /// </summary>
         public IBackRunBuilder AddResilience(Action<ResiliencePipelineBuilder> configure)
         {
-            if (builder.Services.Any(x => x.ImplementationType == typeof(BackRunResilienceMiddleware)))
+            if (builder.Services.Any(serviceDescriptor =>
+                serviceDescriptor.ImplementationType == typeof(BackRunResilienceMiddleware)))
             {
                 return builder; 
             }

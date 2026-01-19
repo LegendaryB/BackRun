@@ -16,10 +16,11 @@ internal sealed class BackRunJobEngine(
     IServiceScopeFactory scopeFactory,
     IOptions<BackRunOptions> options) : BackgroundService, IBackRunJobEngine
 {
+    private readonly BackRunOptions _options = options.Value;
+    
     private readonly Channel<Guid> _channel = Channel.CreateUnbounded<Guid>();
     private readonly SemaphoreSlim _semaphore = new(options.Value.MaxDegreeOfParallelism);
     private readonly ConcurrentBag<Task> _runningTasks = [];
-    private readonly BackRunOptions _options = options.Value;
 
     public async Task<Guid> EnqueueAsync<TPayload, THandler>(
         TPayload payload, 
@@ -34,7 +35,7 @@ internal sealed class BackRunJobEngine(
             HandlerType = typeof(THandler).AssemblyQualifiedName!,
             PayloadType = typeof(TPayload).AssemblyQualifiedName!,
             PayloadJson = JsonSerializer.Serialize(payload),
-            QueueName = enqueueOptions?.QueueName ?? "default",
+            QueueName = enqueueOptions?.QueueName ?? Constants.DefaultQueueName,
             ScheduledAt = enqueueOptions?.ScheduledAt,
             Status = enqueueOptions?.ScheduledAt > DateTimeOffset.UtcNow 
                 ? BackRunJobStatus.Scheduled 
@@ -103,6 +104,7 @@ internal sealed class BackRunJobEngine(
                 }, stoppingToken);
 
                 _runningTasks.Add(task);
+                
                 CleanCompletedTasks();
             }
             catch (OperationCanceledException) { break; }
