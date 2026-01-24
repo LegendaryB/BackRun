@@ -1,7 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
-  <ItemGroup>
-    <ProjectReference Include="..\BackRun.Abstractions\BackRun.Abstractions.csproj" />
-  </ItemGroup>
+
+    <PropertyGroup>
+        <PackageId>BackRun.Storage.InMemory</PackageId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\BackRun.Abstractions\BackRun.Abstractions.csproj"/>
+    </ItemGroup>
 
 </Project>
