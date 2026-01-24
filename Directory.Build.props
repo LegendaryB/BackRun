@@ -13,5 +13,6 @@
         <Description>A lightweight, high-performance background job processing library for ASP.NET Core.</Description>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/LegendaryB/BackRun</RepositoryUrl>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
 </Project>

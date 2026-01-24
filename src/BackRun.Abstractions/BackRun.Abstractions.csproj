@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <PackageId>BackRun.Abstractions</PackageId>
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   
   <ItemGroup>
