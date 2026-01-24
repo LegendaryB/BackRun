@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <PackageId>LegendaryB.BackRun</PackageId>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\BackRun.Abstractions\BackRun.Abstractions.csproj" />
   </ItemGroup>

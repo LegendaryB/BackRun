@@ -4,5 +4,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>14</LangVersion>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/LegendaryB/BackRun</PackageProjectUrl>
+        <Authors>LegendaryB</Authors>
+        <Company>LegendaryB</Company>
+        <Copyright>Copyright (c) LegendaryB 2026</Copyright>
+        <Version>0.0.1</Version>
+        <Description>A lightweight, high-performance background job processing library for ASP.NET Core.</Description>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/LegendaryB/BackRun</RepositoryUrl>
     </PropertyGroup>
 </Project>
