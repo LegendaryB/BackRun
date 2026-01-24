@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <PackageId>BackRun</PackageId>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   
   <ItemGroup>

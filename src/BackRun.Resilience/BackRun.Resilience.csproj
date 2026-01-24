@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <PackageId>BackRun.Resilience</PackageId>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
 
     <ItemGroup>
