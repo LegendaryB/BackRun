@@ -5,6 +5,7 @@
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 
 ![GitHub License](https://img.shields.io/github/license/LegendaryB/BackRun)
+[![Nuget](https://img.shields.io/nuget/v/BackRun.svg?style=flat-square)](https://www.nuget.org/packages/BackRun/)
 
 A lightweight, high-performance background job processing library for ASP.NET Core.  
 <sub>Built with ❤ by LegendaryB</sub>
